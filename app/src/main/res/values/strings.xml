@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">Trivia</string>
     <string name="trivia_title">Trivia</string>
-    <string name="next_question">NExt Question</string>
+    <string name="next_question">Next Question</string>
     <string name="previous_question">Previous Question</string>
     <string name="true_value">True</string>
     <string name="false_value">False</string>
-    <string name="counter_text">0 out of 100</string>
+    <string name="counter_text">0 / 100</string>
+    <string name="best_score">Highest Score: 0</string>
+    <string name="score">Current Score: 0</string>
 </resources>

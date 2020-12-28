@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,6 +33,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageButton previousButton, nextButton;
     private int currentQuestionIndex=0;
     private List<Question> questionList;
+    private TextView scoreTextView, bestScoreTextView;
+    private int CURRENT_SCORE=0, BEST_SCORE;
+    private String SHARED_PREFERENCES_FILE_NAME="trivia_shared_preferences";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         falseButton=findViewById(R.id.false_button);
         questionTextView=findViewById(R.id.question_textView);
         questionCounterTextView=findViewById(R.id.counter_textView);
+        scoreTextView= findViewById(R.id.score_textView);
+        bestScoreTextView=findViewById(R.id.bestScore_textView);
 
         nextButton.setOnClickListener(this);
         previousButton.setOnClickListener(this);
@@ -60,6 +66,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("Inside Async", "processFinished: "+questionArrayList);
             }
         });
+
+        SharedPreferences getSharedPreferences=getSharedPreferences(SHARED_PREFERENCES_FILE_NAME, MODE_PRIVATE);
+        BEST_SCORE= getSharedPreferences.getInt("best_score",0);
+        bestScoreTextView.setText("Highest Score: "+BEST_SCORE);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(CURRENT_SCORE>BEST_SCORE){
+
+            SharedPreferences sharedPreferences= getSharedPreferences(SHARED_PREFERENCES_FILE_NAME,MODE_PRIVATE);
+            SharedPreferences.Editor editor= sharedPreferences.edit();
+            editor.putInt("best_score",CURRENT_SCORE);
+            editor.apply();
+        }
     }
 
     @Override
@@ -87,23 +110,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
+
     public void updateQuestion(){
         Log.d("Update", "updateQuestion: "+currentQuestionIndex);
         questionTextView.setText(questionList.get(currentQuestionIndex).getAnswer());
 
-        questionCounterTextView.setText((currentQuestionIndex+1)+" out of "+questionList.size());
+        questionCounterTextView.setText((currentQuestionIndex+1)+" / "+questionList.size());
     }
+
     public void checkAnswer(Boolean userAnswer){
         Boolean actualAnswer = questionList.get(currentQuestionIndex).getAnswerTrue();
 
         if(actualAnswer==userAnswer){
             fadeView();
+            CURRENT_SCORE++;
             Toast.makeText(getApplicationContext(),"Correct Response",Toast.LENGTH_SHORT).show();
         }
         else{
             shakeAnimation();
+//            if (CURRENT_SCORE>0)
+                CURRENT_SCORE--;
             Toast.makeText(getApplicationContext(),"Incorrect response",Toast.LENGTH_SHORT).show();
         }
+        scoreTextView.setText("Current SCORE: "+CURRENT_SCORE);
 
     }
     private void shakeAnimation(){
