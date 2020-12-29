@@ -8,4 +8,5 @@
     <string name="counter_text">0 / 100</string>
     <string name="best_score">Highest Score: 0</string>
     <string name="score">Current Score: 0</string>
+    <string name="new_game">New Game</string>
 </resources>
